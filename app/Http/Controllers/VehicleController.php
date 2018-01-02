@@ -128,4 +128,9 @@ class VehicleController extends Controller
     {
         //
     }
+
+    public function bookVehicle(Request $request, Vehicle $vehicle)
+    {
+
+    }
 }
