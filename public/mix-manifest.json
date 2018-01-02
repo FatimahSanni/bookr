@@ -4,5 +4,6 @@
     "/js/bootstrap.min.js": "/js/bootstrap.min.js",
     "/js/popper.js": "/js/popper.js",
     "/js/jquery.min.js": "/js/jquery.min.js",
-    "/css/bootstrap.min.css": "/css/bootstrap.min.css"
+  "/css/bootstrap.min.css": "/css/bootstrap.min.css",
+  "/css/font-awesome.min.css": "/css/font-awesome.min.css"
 }
