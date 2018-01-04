@@ -15,7 +15,7 @@
                         @if($vehicle->incidence_reports->count())
                             <li>
                                 <strong>Incidence Reports: </strong>
-                                <a href="#" data-toggle="modal" data-target="#incidenceReportModal">
+                                <a href="#" data-toggle="modal" data-target="#incidenceReportModal" class="text-danger">
                                     {{$vehicle->incidence_reports->count()." ".str_plural('strike', $vehicle->incidence_reports->count())}}
                                     (Click to view)
                                 </a>
