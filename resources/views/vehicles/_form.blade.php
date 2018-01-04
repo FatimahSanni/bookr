@@ -26,6 +26,14 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-12">
+        <div class="form-group">
+            {!! Form::label('routes') !!}
+            {!! Form::select('routes[]', $routes, null, ['class'=>'form-control', 'multiple'=>'multiple']) !!}
+        </div>
+    </div>
+</div>
 <hr>
 <div class="form-group">
     {!! Form::label('picture', "Upload Driver's Photo") !!}

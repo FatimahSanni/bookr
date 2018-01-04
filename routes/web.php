@@ -11,12 +11,12 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Auth::routes();
-
-Route::resource('vehicles', 'VehicleController');
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/', 'VehicleController@index');
+    Route::resource('vehicles', 'VehicleController');
+    Route::post('/book-vehicle/{vehicle}', 'VehicleController@bookVehicle');
+});
 
 Route::get('/home', 'HomeController@index')->name('home');

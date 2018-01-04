@@ -27,13 +27,27 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function userDetails()
     {
         return $this->hasOne(UserDetail::class);
     }
 
+    /**
+     * @return string
+     */
     public function getFullNameAttribute()
     {
         return $this->userDetails->first_name . " " . $this->userDetails->last_name;
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
     }
 }

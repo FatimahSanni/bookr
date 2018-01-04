@@ -39,4 +39,25 @@ class Vehicle extends Model
     {
         return $this->driver->userDetails->picture;
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function locations()
+    {
+        return $this->belongsToMany(Location::class);
+    }
+
+    public function getBookingsCountAttribute()
+    {
+        return $this->bookings->count();
+    }
 }
