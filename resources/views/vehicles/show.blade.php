@@ -12,8 +12,17 @@
                         <li><strong>Driver: </strong>{{$vehicle->driver->fullName}}</li>
                         <li><strong>Added on: </strong>{{$vehicle->created_at->format('d/m/Y')}}</li>
                         <li><strong>No. of times booked: </strong>{{$vehicle->bookings_count}}</li>
+                        @if($vehicle->incidence_reports->count())
+                            <li>
+                                <strong>Incidence Reports: </strong>
+                                <a href="#" data-toggle="modal" data-target="#incidenceReportModal">
+                                    {{$vehicle->incidence_reports->count()." ".str_plural('strike', $vehicle->incidence_reports->count())}}
+                                    (Click to view)
+                                </a>
+                            </li>
+                        @endif
                     </ul>
-                    <h5>Routes</h5>
+                    <h5 class="mt-5">Routes</h5>
                     <ol>
                         @foreach($vehicle->locations as $route)
                             <li>{{$route->name}}</li>
@@ -51,4 +60,5 @@
             @endif
         </div>
     </div>
+    @include('vehicles._incidence_report_history')
 @endsection

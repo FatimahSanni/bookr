@@ -17,3 +17,5 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('vehicles', 'VehicleController');
     Route::post('/book-vehicle/{vehicle}', 'VehicleController@bookVehicle');
 });
+Route::post('/report-vehicle', 'IncidenceReportController@reportVehicle');
+
