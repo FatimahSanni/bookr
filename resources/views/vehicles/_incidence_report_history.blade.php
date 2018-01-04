@@ -23,8 +23,8 @@
                             <tr>
                                 <td>{{++$index}}</td>
                                 <td>{{$report->created_at->format('d/m/Y')}}</td>
-                                <td>{{$report->collision ? 'True' : 'False'}}</td>
-                                <td>{{$report->injury ? 'True' : 'False'}}</td>
+                                <td>{{$report->collision ? 'Yes' : 'No'}}</td>
+                                <td>{{$report->injury ? 'Yes' : 'No'}}</td>
                                 <td>{{$report->location}}</td>
                                 <td>{{$report->comment}}</td>
                             </tr>
