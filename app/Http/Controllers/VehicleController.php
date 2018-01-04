@@ -147,7 +147,8 @@ class VehicleController extends Controller
      */
     public function show(Vehicle $vehicle)
     {
-        return view('vehicles.show', compact('vehicle'));
+        $bookings = Booking::where('vehicle_id', $vehicle->id)->orderBy('from', 'asc')->get();
+        return view('vehicles.show', compact('vehicle', 'bookings'));
     }
 
     /**

@@ -34,6 +34,7 @@ return [
         'bookingsDesc' => 'Bookings(High to Low)'
     ],
     'vehicle_status' => ['booked', 'free'],
+    'booking_status' => ['pending', 'fulfilled'],
     'days' => $days,
     'months' => $months,
     'expiryYearsForCreditCards' => $expiryYearsForCreditCards

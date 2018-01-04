@@ -52,6 +52,7 @@
                             <p class="card-text"><i
                                         class="fa fa-line-chart"></i> {{$vehicle->bookings_count . " ".str_plural('time', $vehicle->bookings_count)}}
                             </p>
+                            <a href="/vehicles/{{$vehicle->id}}" class="btn btn-outline-dark btn-block mb-3">View</a>
                             <a href="#" class="btn btn-info btn-block book-vehicle" data-toggle="modal"
                                data-target="#bookVehicleModal{{$vehicle->id}}">Book</a>
                         </div>
