@@ -11,7 +11,6 @@
 |
 */
 
-
 Auth::routes();
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/', 'VehicleController@index');
@@ -19,3 +18,4 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/book-vehicle/{vehicle}', 'VehicleController@bookVehicle');
 });
 Route::post('/report-vehicle', 'IncidenceReportController@reportVehicle');
+
