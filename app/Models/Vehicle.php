@@ -56,8 +56,19 @@ class Vehicle extends Model
         return $this->belongsToMany(Location::class);
     }
 
+    /**
+     * @return mixed
+     */
     public function getBookingsCountAttribute()
     {
         return $this->bookings->count();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function incidence_reports()
+    {
+        return $this->hasMany(IncidenceReport::class);
     }
 }

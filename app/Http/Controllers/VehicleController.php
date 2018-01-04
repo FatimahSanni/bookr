@@ -136,7 +136,13 @@ class VehicleController extends Controller
             $result = false;
             Log::info($exception->getMessage());
         }
-        return $result ? redirect('/vehicles/' . $result) : redirect()->back();
+        if ($result) {
+            notify()->flash("<i class='fa-thumbs-up'></i>", "success", ['text' => 'Vehicle successfully added']);
+            return redirect('/vehicles/' . $result);
+        } else {
+            notify()->flash("<i class='fa-frown-o'></i>", "danger", ['text' => "Something happened. Vehicle could not be happened. Please try again"]);
+            return redirect()->back();
+        }
     }
 
     /**
@@ -185,6 +191,11 @@ class VehicleController extends Controller
         //
     }
 
+    /**
+     * @param BookVehicleRequest $request
+     * @param $vehicleId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function bookVehicle(BookVehicleRequest $request, $vehicleId)
     {
         $booking = new Booking();
@@ -197,4 +208,5 @@ class VehicleController extends Controller
         $booking->amount = $request->amount;
         return $booking->save() ? response()->json("Vehicle successfully booked") : response()->json("Something went wrong. Vehicle could not be booked. Please try again");
     }
+
 }

@@ -11,7 +11,8 @@
         <ul class="nav navbar-nav navbar-right">
             <li class="mr-4"><a href="/vehicles/create" class="text-light">Add Vehicle</a></li>
             <li class="mr-4"><a href="/vehicles" class="text-light">Book Vehicle</a></li>
-            <li class="mr-5"><a href="#" class="text-light">Report Vehicle</a></li>
+            <li class="mr-5"><a href="#" class="text-light" data-toggle="modal" data-target="#reportVehicleModal">Report
+                    Vehicle</a></li>
             <!-- Authentication Links -->
             @guest
             <li class="mr-5"><a href="{{ route('login') }}" class="text-light">Login</a></li>
