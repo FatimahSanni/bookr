@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BookVehicleRequest;
 use App\Http\Requests\VehicleRequest;
+use App\Models\Booking;
+use App\Models\Location;
 use App\Models\User;
 use App\Models\UserDetail;
 use App\Models\Vehicle;
 use App\Models\VehicleModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -26,14 +30,63 @@ class VehicleController extends Controller
     {
         $vehicles = Vehicle::query();
         $prices = Config::get('helpers.prices');
-        if ($request->has('dateAsc')) {
+        $routes = Location::pluck('name', 'id');
+        $filters = Config::get('helpers.filters');
+        $months = Config::get('helpers.months');
+        $expiryYearsForCreditCards = Config::get('helpers.expiryYearsForCreditCards');
+        $bookedVehicles = collect([]);
+        if (is_null($request->from) && is_null($request->to) && is_null($request->filters) && is_null($request->date)) {
             $vehicles = $vehicles->orderBy('created_at', 'DESC');
         }
-        if ($request->has('dateAsc')) {
-            $vehicles = $vehicles->orderBy('created_at', 'ASC');
+        if (!is_null($request->from) && !is_null($request->to)) {
+            $from = $request->from;
+            $to = $request->to;
+            $vehicles = $vehicles->whereHas('locations', function ($query) use ($from, $to) {
+                $query->where('locations.id', $from)->orWhere('locations.id', $to);
+            });
         }
-        $vehicles = $vehicles->paginate();
-        return view('vehicles.index', compact('vehicles', 'prices'));
+        if ($request->filters === "dateAsc") {
+            $vehicles = $vehicles->orderBy('created_at', 'asc');
+        }
+
+        if ($request->filters === "dateDesc") {
+            $vehicles = $vehicles->orderBy('created_at', 'desc');
+        }
+        if ($request->filters === "bookingsAsc") {
+            $vehicles = $vehicles->withCount('bookings')->orderBy('bookings_count', 'asc');
+        }
+        if ($request->filters === "bookingsDesc") {
+            $vehicles = $vehicles->withCount('bookings')->orderBy('bookings_count', 'desc');
+        }
+        if (!is_null($request->from_date) && !is_null($request->to_date)) {
+            $from_date = $request->from_date;
+            $to_date = $request->to_date;
+            $bookedVehicles = Vehicle::whereHas('bookings', function ($query) use ($from_date, $to_date) {
+                return $query->where('to', '=', $from_date)
+                    ->orWhere(function ($query) use ($from_date, $to_date) {
+                        return $query->where('from', '<=', $from_date)
+                            ->where('to', '=', $to_date);
+                    })
+                    ->orWhere(function ($query) use ($from_date, $to_date) {
+                        return $query->where('from', '<=', $from_date)
+                            ->where('to', '>=', $to_date);
+                    })
+                    ->orWhere(function ($query) use ($from_date, $to_date) {
+                        return $query->where('from', '>=', $from_date)
+                            ->where('from', '<=', $to_date);
+                    })
+                    ->orWhere(function ($query) use ($from_date, $to_date) {
+                        return $query->where('from', '=', $from_date)
+                            ->where('to', '=', $to_date);
+                    })
+                    ->orWhere(function ($query) use ($from_date, $to_date) {
+                        return $query->where('from', '=', $to_date)
+                            ->where('to', '>=', $to_date);
+                    });
+            })->get();
+        }
+        $vehicles = $bookedVehicles ? $vehicles->get()->diff($bookedVehicles) : $vehicles->get();
+        return view('vehicles.index', compact('vehicles', 'prices', 'routes', 'filters', 'expiryYearsForCreditCards', 'months'));
     }
 
     /**
@@ -45,14 +98,15 @@ class VehicleController extends Controller
     {
         $vehicleModels = VehicleModel::pluck('name', 'id');
         $years = Config::get('helpers.years');
-        return view('vehicles.create', compact('vehicleModels', 'years'));
+        $routes = Location::pluck('name', 'id');
+        return view('vehicles.create', compact('vehicleModels', 'years', 'routes'));
     }
 
     /**
      * @param VehicleRequest $request
      * @return $this|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function store(Request $request)
+    public function store(VehicleRequest $request)
     {
         try {
             $result = DB::transaction(function () use ($request) {
@@ -75,6 +129,7 @@ class VehicleController extends Controller
                 $vehicle->vehicle_model_id = $request->vehicle_model_id;
                 $vehicle->driver_id = $user->id;
                 $vehicle->save();
+                $vehicle->locations()->sync($request->routes);
                 return $vehicle->id;
             });
         } catch (\Exception $exception) {
@@ -129,8 +184,16 @@ class VehicleController extends Controller
         //
     }
 
-    public function bookVehicle(Request $request, Vehicle $vehicle)
+    public function bookVehicle(BookVehicleRequest $request, $vehicleId)
     {
-
+        $booking = new Booking();
+        $booking->vehicle_id = $vehicleId;
+        $booking->client_id = Auth::user()->id;
+        $booking->pickup_id = $request->pickup;
+        $booking->destination_id = $request->destination;
+        $booking->from = $request->from_date;
+        $booking->to = $request->to_date;
+        $booking->amount = $request->amount;
+        return $booking->save() ? response()->json("Vehicle successfully booked") : response()->json("Something went wrong. Vehicle could not be booked. Please try again");
     }
 }

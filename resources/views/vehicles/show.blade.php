@@ -18,6 +18,16 @@
                              alt="Driver's picture" width="120px">
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h5>Routes</h5>
+                        <ol>
+                            @foreach($vehicle->locations as $route)
+                                <li>{{$route->name}}</li>
+                            @endforeach
+                        </ol>
+                    </div>
+                </div>
             </div>
         </div>
         <hr>
